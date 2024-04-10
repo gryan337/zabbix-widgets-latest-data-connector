@@ -15,7 +15,7 @@
 
 ## Purpose
 
-- Zabbix global dashboards and the Latest data page are the most common places to go to view a large number of metrics on high-performance computing systems or systems that operate as clusters with many hosts that perform the same or similar functions. Template dashboards are simply too cumbersome for such environments where there are hundreds or even thousands of hosts. This widget was developed with the idea that, in a global dashboard you should have simple graphs to display a few lines to show aggregated cluster metrics, or perhaps averages, max and min. Then, have a button (this widget) that enables one-click navigation to the Latest data page to show the individual per-host or per-process/application metrics for which there might be hundreds or thousands that comprise the aggregate graph. 
+- Zabbix global dashboards and the Latest data page are the most common places to go to view a large number of metrics on high-performance computing systems or systems that operate as clusters with many hosts that perform the same or similar functions. Template dashboards are simply too cumbersome for monitoring such environments where there are hundreds or even thousands of hosts and hundreds of thousands or millions of metrics. This widget was developed with the idea that, in a global dashboard you should have simple graphs to display a few lines to show aggregated cluster metrics, or perhaps averages, max and min. Then, have a button (this widget) that enables one-click navigation to the Latest data page to show the individual per-host or per-process/application metrics for which there might be hundreds or thousands that comprise the aggregate graph. 
 
 ## Future Development
 
