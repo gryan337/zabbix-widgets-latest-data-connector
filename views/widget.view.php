@@ -52,8 +52,6 @@ $wrapper_base->append('line-height: normal');
 $url_base[] = (new CDiv($this->data['name']))
 	->addStyle(implode('; ', (array) $wrapper_base));
 
-file_put_contents('/var/log/test', print_r($this, true));
-
 $link = (new CLink($url_base, $url));
 if ($this->data['fields_values']['url_target']) {
 	$link->setTarget('_blank');
