@@ -2,14 +2,20 @@
 
 namespace Modules\LatestDataConnector\Actions;
 
-use API;
-use CProfile;
-use CControllerDashboardWidgetView;
-use CControllerResponseData;
+use API,
+	CControllerDashboardWidgetView,
+	CControllerResponseData,
+	CProfile,
+	CWebUser,
+	Modules\LatestDataConnector\Widget;
 
 class WidgetView extends CControllerDashboardWidgetView {
 
 	protected function doAction(): void {
+		$idx2 = $this->fields_values['latest_data_dashboard'];
+		if ($idx2 == 0) {
+			CProfile::update('web.monitoring.latest.properties', '{"filter_name":""}', 3);
+		}
 
 		$data = [
 			'name' => $this->getInput('name', $this->widget->getDefaultName()),
@@ -26,13 +32,36 @@ class WidgetView extends CControllerDashboardWidgetView {
 			$data['error'] = _('No data.');
 		}
 		else {
+			$data['error'] = null;
 			if ($this->isTemplateDashboard()) {
 				$hostids = $this->fields_values['override_hostid'];
 			}
 			else {
 				$groupids = $this->fields_values['groupids'] ?: [];
-				$hosts = $this->fields_values['hosts'] ?: [];
+				if ($groupids) {
+					$group_names = API::HostGroup()->get([
+						'output' => ['name'],
+						'groupids' => $groupids,
+						'preservekeys' => true
+					]);
+				}
+				else {
+					$group_names = [];
+				}
+
 				$hostids = [];
+				if ($hostids) {
+					$host_names = API::Host()->get([
+						'output' => ['host'],
+						'hostids' => $hostids,
+						'preservekeys' => true
+					]);
+				}
+				else {
+					$host_names = [];
+				}
+
+				$hosts = $this->fields_values['hosts'] ?: [];
 				foreach ($hosts as $host_pattern) {
 					$hostids += API::Host()->get([
 						'output' => ['hostid'],
@@ -46,15 +75,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 			}
 		}
 
-		// We need to reset the home funnel so that when the user clicks
-		// any prior profile settings do not interfere
-		CProfile::update('web.monitoring.latest.properties', '{"filter_name":""}', 3);
-
 		$data += [
-			'error' => null,
 			'groupids' => $groupids,
 			'fields_values' => $this->fields_values,
-			'hostids' => $hostids
+			'hostids' => $hostids,
+			'group_names' => $group_names,
+			'host_names' => $host_names
 		];
 
 		$this->setResponse(new CControllerResponseData($data));

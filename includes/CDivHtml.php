@@ -4,7 +4,7 @@ namespace Modules\LatestDataConnector\Includes;
 
 use CTag;
 
-class CDivRawHtml extends CTag {
+class CDivHtml extends CTag {
 
 	public function __construct($items = null) {
 		parent::__construct('div', true);

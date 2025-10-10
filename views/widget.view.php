@@ -1,28 +1,41 @@
 <?php
 
 use Modules\LatestDataConnector\Widget;
-use Modules\LatestDataConnector\Includes\CDivRawHtml;
+use Modules\LatestDataConnector\Includes\CDivHtml;
 
 
-$header = new CDivRawHtml();
+$header = new CDivHtml();
 
+// Add groupids
 $groupids = [];
-if (array_key_exists('groupids', $this->data)) {
-	foreach ($this->data['groupids'] as $g) {
+if (array_key_exists('groupids', $this->data['fields_values'])) {
+	foreach ($this->data['fields_values']['groupids'] as $g) {
 		$groupids[] = $g;
 	}
 }
 
+// Add hostids
 $hostids = [];
 if ($this->data['is_template_dashboard'] == 1) {
 	$hostids = $this->data['fields_values']['override_hostid'];
 }
 else {
-	if (array_key_exists('hostids', $this->data)) {
+	if ($this->data['fields_values']['hostids']) {
+		foreach ($this->data['fields_values']['hostids'] as $h) {
+			$hostids[] = $h;
+		}
+	}
+	elseif (array_key_exists('hostids', $this->data)) {
 		foreach ($this->data['hostids'] as $h => $value) {
 			$hostids[] = $value['hostid'];
 		}
 	}
+}
+
+// Check for filter name
+$filter_name = Widget::LATEST_DATA_FILTER_NAMES[$this->data['fields_values']['latest_data_dashboard']];
+if ($filter_name == 'None') {
+	$filter_name = '';
 }
 
 $itemtags = Array();
@@ -38,6 +51,7 @@ $url = (new CUrl('zabbix.php'))
 	->setArgument('hostids', $hostids)
 	->setArgument('sortorder', Widget::SORT_ORDER[$this->data['fields_values']['sort_order']])
 	->setArgument('sort', Widget::SORT_FIELDS[$this->data['fields_values']['sort_field']])
+	->setArgument('filter_name', $filter_name)
 	->setArgument('name', $this->data['fields_values']['metric_name']);
 
 foreach ($itemtags as $key => $value) {
@@ -49,17 +63,30 @@ $wrapper_base = new ArrayObject();
 $wrapper_base->append('color: #' . $this->data['fields_values']['font_color']);
 $wrapper_base->append('line-height: normal');
 
-$url_base[] = (new CDiv($this->data['name']))
+$text = (new CDiv($this->data['name']))
 	->addStyle(implode('; ', (array) $wrapper_base));
 
+if ($this->data['group_names']) {
+	foreach ($this->data['group_names'] as $groupid => $values) {
+		$text->setAttribute('groupname', $values['name']);
+	}
+}
+
+if ($this->data['host_names']) {
+	foreach ($this->data['host_names'] as $groupid => $values) {
+		$text->setAttribute('hostname', $values['host']);
+	}
+}
+
+$url_base = $text;
 $link = (new CLink($url_base, $url));
 if ($this->data['fields_values']['url_target']) {
 	$link->setTarget('_blank');
 }
 
-$header->addItem(
-	(new CDiv([$link]))->addClass(ZBX_STYLE_CENTER)
-);
+$my_url = (new CDiv([$link]));
+
+$header->addItem($my_url)->addClass(ZBX_STYLE_CENTER);
 
 $wrapper = new CDiv($header);
 $wrapper->addClass('dashboard-widget-latest-data-connector-wrapper');
@@ -69,17 +96,21 @@ $wrapper_style->append('font-family: ' . Widget::FONT_FAMILY[$this->data['fields
 $wrapper_style->append('font-size: ' . $this->data['fields_values']['font_size'] . 'px');
 $wrapper_style->append('font-weight: ' . ((in_array(Widget::FONT_STYLE_BOLD, $this->data['fields_values']['font_style']))
 	? 'bold'
-	: 'normal'));
+	: 'normal'
+));
 
 $wrapper_style->append('font-style: '. ((in_array(Widget::FONT_STYLE_ITALIC, $this->data['fields_values']['font_style']))
 	? 'italic'
-	: 'normal'));
+	: 'normal'
+));
 
 $wrapper_style->append('text-decoration: '. ((in_array(Widget::FONT_STYLE_UNDERLINE, $this->data['fields_values']['font_style']))
 	? 'underline'
-	: 'none'));
+	: 'none'
+));
 
 $wrapper_style->append('background-color: #' . $this->data['fields_values']['background_color']);
+$wrapper_style->append('text-decoration-color: #' . $this->data['fields_values']['font_color']);
 $wrapper_style->append('margin: auto');
 
 $wrapper->addStyle(implode('; ', (array) $wrapper_style));
@@ -87,11 +118,12 @@ $wrapper->addStyle(implode('; ', (array) $wrapper_style));
 $output = [];
 $output['name'] = '';
 
-if (array_key_exists('name', $this->data)) {
-	$output['name'] = $this->data['name'];
+if ($this->data['fields_values']['content']) {
+	$output['body'] = $my_url->items;
 }
-
-$output['body'] = $wrapper->toString();
+else {
+	$output['body'] = $wrapper->toString();
+}
 
 if ($messages = get_and_clear_messages()) {
 	$output['messages'] = array_column($messages, 'message');

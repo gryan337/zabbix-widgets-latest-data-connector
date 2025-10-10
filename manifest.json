@@ -6,7 +6,7 @@
 	"namespace": "LatestDataConnector",
 	"description": "Enables one-click navigation to the Latest data page with pre-populated filters",
 	"version": "1.0",
-	"author": "Ryan Eberly",
+	"author": "RME",
 	"actions": {
 		"widget.latestdataconnector.view": {
 			"class": "WidgetView"
@@ -19,7 +19,15 @@
 			"height": 3
 		},
 		"refresh_rate": 0,
-		"js_class": "CWidgetLatestDataConnector"
+		"js_class": "CWidgetLatestDataConnector",
+		"in": {
+			"hostids": {
+				"type": "_hostids"
+			},
+			"groupids": {
+				"type": "_hostgroupids"
+			}
+		}
 	},
 	"assets": {
 		"css": ["widget.css"],

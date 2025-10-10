@@ -37,6 +37,10 @@ class Widget extends CWidget {
 		1 => 'name'
 	];
 
+	public const LATEST_DATA_FILTER_NAMES = [
+		0 => 'None'
+	];
+
 	public function getDefaultName(): string {
 		return _('Latest data connector');
 	}

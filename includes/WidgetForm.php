@@ -4,19 +4,24 @@ namespace Modules\LatestDataConnector\Includes;
 
 use Modules\LatestDataConnector\Widget;
 
-use Zabbix\Widgets\CWidgetField;
-use Zabbix\Widgets\CWidgetForm;
+use Zabbix\Widgets\{
+	CWidgetField,
+	CWidgetForm
+};
+
 use Zabbix\Widgets\Fields\{
 	CWidgetFieldCheckBox,
 	CWidgetFieldCheckBoxList,
 	CWidgetFieldColor,
-	CWidgetFieldHostPatternSelect,
+	CWidgetFieldPatternSelectHost,
 	CWidgetFieldIntegerBox,
 	CWidgetFieldMultiSelectGroup,
 	CWidgetFieldMultiSelectOverrideHost,
+	CWidgetFieldMultiSelectHost,
 	CWidgetFieldRadioButtonList,
 	CWidgetFieldSelect,
 	CWidgetFieldTags,
+	CWidgetFieldTextArea,
 	CWidgetFieldTextBox
 };
 
@@ -26,13 +31,20 @@ class WidgetForm extends CWidgetForm {
 
 	public function addFields(): self {
 		return $this
+			->addField(
+				new CWidgetFieldTextArea('content', _('Content'))
+			)
 			->addField($this->isTemplateDashboard()
 				? null
 				: new CWidgetFieldMultiSelectGroup('groupids', _('Host groups'))
 			)
 			->addField($this->isTemplateDashboard()
 				? null
-				: new CWidgetFieldHostPatternSelect('hosts', _('Host pattern')
+				: new CWidgetFieldMultiSelectHost('hostids', _('Hosts'))
+			)
+			->addField($this->isTemplateDashboard()
+				? null
+				: new CWidgetFieldPatternSelectHost('hosts', _('Host pattern')
 			))
 			->addField(
 				(new CWidgetFieldRadioButtonList('evaltype', _('Item tags'), [
@@ -44,14 +56,20 @@ class WidgetForm extends CWidgetForm {
 				new CWidgetFieldTags('item_tags')
 			)
 			->addField(
-				new CWidgetFieldTextBox('metric_name', _('Metric name'))
-			)
-			->addField(
-				(new CWidgetFieldRadioButtonList('sort_order', _('Sort order'), Widget::SORT_ORDER))
+				$this->createLatestDataDashboardSelect('latest_data_dashboard')
 					->setDefault(0)
 			)
 			->addField(
-				(new CWidgetFieldSelect('sort_field', _('Sort field'), Widget::SORT_FIELDS))
+				new CWidgetFieldTextBox('metric_name', _('Metric name'))
+			)
+			->addField(
+				(new CWidgetFieldRadioButtonList('sort_order', _('Sort order'), [
+					0 => _('Ascending'),
+					1 => _('Descending')
+				]))->setDefault(0)
+			)
+			->addField(
+				$this->createSortOptions('sort_field')
 					->setDefault(0)
 			)
 			->addField(
@@ -59,8 +77,8 @@ class WidgetForm extends CWidgetForm {
 					->setDefault(0)
 			)
 			->addField(
-				(new CWidgetFieldSelect('font_family', _('Font family'), Widget::FONT_FAMILY))
-					->setDefault(0)
+				$this->createFontSelect('font_family')
+					->setDefault(3)
 				)
 			->addField(
 				(new CWidgetFieldIntegerBox('font_size', _('Font size'), 12, 48))
@@ -83,6 +101,20 @@ class WidgetForm extends CWidgetForm {
 				new CWidgetFieldMultiSelectOverrideHost()
 			)
 		;
+	}
+
+	function createFontSelect(string $name): CWidgetFieldSelect {
+		return (new CWidgetFieldSelect($name, _('Font family'), Widget::FONT_FAMILY));
+	}
+
+	function createLatestDataDashboardSelect(string $name): CWidgetFieldSelect {
+		$latest_data_filters = Widget::LATEST_DATA_FILTER_NAMES;
+		asort($latest_data_filters);
+		return (new CWidgetFieldSelect($name, _('Latest data filter'), $latest_data_filters));
+	}
+
+	function createSortOptions(string $name): CWidgetFieldSelect {
+		return (new CWidgetFieldSelect($name, _('Sort Field'), Widget::SORT_FIELDS));
 	}
 
 }
