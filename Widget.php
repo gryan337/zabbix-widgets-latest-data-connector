@@ -42,7 +42,7 @@ class Widget extends CWidget {
 	];
 
 	public function getDefaultName(): string {
-		return _('Latest data connector');
+		return _('RME Latest data connector');
 	}
 
 }
