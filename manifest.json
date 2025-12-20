@@ -2,7 +2,7 @@
 	"manifest_version": 2.0,
 	"id": "latestdataconnector",
 	"type": "widget",
-	"name": "Latest data connector",
+	"name": "RME Latest data connector",
 	"namespace": "LatestDataConnector",
 	"description": "Enables one-click navigation to the Latest data page with pre-populated filters",
 	"version": "1.0",
