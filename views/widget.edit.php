@@ -34,7 +34,7 @@ $groupids = array_key_exists('groupids', $data['fields'])
 			)
 	)
 	->addField($groupids)
-	->addField(array_key_exists('hosids', $data['fields'])
+	->addField(array_key_exists('hostids', $data['fields'])
 		? (new CWidgetFieldMultiSelectHostView($data['fields']['hostids']))
 			->setFilterPreselect([
 				'id' => $groupids->getId(),
