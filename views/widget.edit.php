@@ -103,5 +103,5 @@ $groupids = array_key_exists('groupids', $data['fields'])
 		new CWidgetFieldColorView($data['fields']['background_color']),
 	)
 	->includeJsFile('widget.edit.js.php')
-	->addJavaScript('widget_latest_data_connector_form.init();')
+	->initFormJs('widget_latest_data_connector_form.init();')
 	->show();

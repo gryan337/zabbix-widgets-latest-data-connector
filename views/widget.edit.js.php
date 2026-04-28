@@ -2,9 +2,10 @@
 
 ?>
 
-window.widget_latest_data_connector_form = new class {
+window.widget_latest_data_connector_form = new class extends CWidgetForm {
 
 	init() {
-		this._form = document.getElementById('widget-dialogue-form');
+		this._form = this.getForm();
+		this.ready();
 	}
 };
